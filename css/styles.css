@@ -41,6 +41,10 @@
 }
 
 *,*::before,*::after{box-sizing:border-box}
+/* The hidden attribute must win over class-level display rules (.lightbox uses
+   display:flex, .totop uses display:grid), otherwise those overlays stay on
+   screen and cover the page. */
+[hidden]{display:none!important}
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--hdr) + 16px);-webkit-text-size-adjust:100%}
 body{
   margin:0;

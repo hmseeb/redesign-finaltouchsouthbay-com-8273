@@ -184,20 +184,36 @@
 
   /* ---------------- Gallery lightbox ---------------- */
   var lb      = $('#lightbox');
-  var lbImg   = $('#lbImg');
   var lbCap   = $('#lbCap');
+  var lbFig   = lb ? $('.lightbox__fig', lb) : null;
+  var lbImg   = null;
   var gitems  = $$('#galleryGrid .gitem');
   var current = 0;
   var lastFocused = null;
+
+  // The lightbox <img> is created the first time it is needed. Keeping an
+  // empty-src placeholder in the markup made the browser resolve src="" to
+  // the page URL, which requests the document and reports a broken image.
+  function ensureLbImg() {
+    if (lbImg || !lbFig) return lbImg;
+    lbImg = document.createElement('img');
+    lbImg.id = 'lbImg';
+    lbFig.insertBefore(lbImg, lbCap || null);
+    return lbImg;
+  }
 
   function showAt(i) {
     if (!gitems.length) return;
     current = (i + gitems.length) % gitems.length;
     var el = gitems[current];
     var img = $('img', el);
-    lbImg.src = el.getAttribute('data-full') || (img ? img.src : '');
-    lbImg.alt = img ? img.alt : '';
-    lbCap.textContent = el.getAttribute('data-caption') || '';
+    var src = el.getAttribute('data-full') || (img ? img.src : '');
+    var node = ensureLbImg();
+    if (node && src) {
+      node.src = src;
+      node.alt = img ? img.alt : '';
+    }
+    if (lbCap) lbCap.textContent = el.getAttribute('data-caption') || '';
   }
   function openLightbox(i) {
     if (!lb) return;
